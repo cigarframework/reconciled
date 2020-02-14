@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option go_package = "github.com/cigarframework/reconciled/pkg/proto";
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_getters_all) = true;
+option (gogoproto.gostring_all) = true;
+
+message OwnerRef {
+    string Name = 1;
+    string Kind = 2;
+    string Group = 3;
+}
+
+message Meta {
+    string Group = 1;
+    string Kind = 2;
+    string Name = 3;
+    int64 Version = 4;
+    google.protobuf.Timestamp CreatedAt = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp UpdatedAt = 6 [(gogoproto.stdtime) = true];
+    OwnerRef Owner = 7;
+}
+
+message State {
+    Meta Meta = 1;
+    google.protobuf.Struct Spec = 2;
+}
+
+message ListRequest {
+    string Expression = 1;
+    bool Watch = 2;
+    string Group = 3;
+    string Kind = 4;
+    string Name = 5;
+}
+
+message ListResponse {
+    State State = 1;
+    bool IsDelete = 2;
+    bool IsUpdate = 3;
+    string Error = 4;
+}
+
+message PatchRequest {
+    Meta Meta = 1;
+    google.protobuf.StringValue JSONPatch = 2;
+}
+
+service StateService {
+    rpc Get (Meta) returns (State) {
+    }
+
+    rpc Remove (Meta) returns (google.protobuf.Empty) {
+    }
+
+    rpc List (ListRequest) returns (stream ListResponse) {
+    }
+
+    rpc Create (State) returns (State) {
+
+    }
+
+    rpc Update (State) returns (State) {
+
+    }
+
+    rpc Patch (PatchRequest) returns (State) {
+    }
+}
