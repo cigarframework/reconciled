@@ -4,9 +4,6 @@ package(default_visibility = ["//visibility:public"])
 
 load("@bazel_gazelle//:def.bzl", "gazelle")
 
-# gazelle:exclude portal
-
-#gazelle:exclude npm
 gazelle(
     prefix = "github.com/cigarframework/reconciled",
     name = "gazelle",
@@ -17,7 +14,7 @@ gazelle(
     ],
 )
 
-# gazelle:resolve go github.com/cigarframework/reconciled/pkg/proto @reconciled//pkg/proto:go_default_library
+# gazelle:resolve go github.com/cigarframework/reconciled/pkg/proto @com_github_cigarframework_reconciled//pkg/proto:go_default_library
 go_library(
     name = "com_github_cigarframework_reconciled",
     importpath = "github.com/cigarframework/reconciled",
@@ -31,6 +28,6 @@ go_library(
         "//pkg/plugins:go_default_library",
         "//pkg/server:go_default_library",
         "//pkg/storage:go_default_library",
-        "//pkg/proto:go_default_library",
+        "@reconciled//pkg/proto:go_default_library",
     ],
 )

@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate syncmap -name stateMap -pkg client -o statemap_gen.go map[string]State
+//go:generate syncmap -name stateMap -pkg client -o statemap_gen.go map[string]storage.State
 type MemorizedClient struct {
 	*Client
 	backoff         *backoff.ExponentialBackOff

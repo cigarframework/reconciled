@@ -10,6 +10,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"unsafe"
+
+	"github.com/cigarframework/reconciled/pkg/storage"
 )
 
 // Map is like a Go map[interface{}]interface{} but is safe for concurrent use
@@ -70,7 +72,7 @@ type readOnlyStateMap struct {
 
 // expunged is an arbitrary pointer that marks entries which have been deleted
 // from the dirty map.
-var expungedStateMap = unsafe.Pointer(new(State))
+var expungedStateMap = unsafe.Pointer(new(storage.State))
 
 // An entry is a slot in the map corresponding to a particular key.
 type entryStateMap struct {
@@ -95,14 +97,14 @@ type entryStateMap struct {
 	p unsafe.Pointer // *interface{}
 }
 
-func newEntryStateMap(i State) *entryStateMap {
+func newEntryStateMap(i storage.State) *entryStateMap {
 	return &entryStateMap{p: unsafe.Pointer(&i)}
 }
 
 // Load returns the value stored in the map for a key, or nil if no
 // value is present.
 // The ok result indicates whether value was found in the map.
-func (m *stateMap) Load(key string) (value State, ok bool) {
+func (m *stateMap) Load(key string) (value storage.State, ok bool) {
 	read, _ := m.read.Load().(readOnlyStateMap)
 	e, ok := read.m[key]
 	if !ok && read.amended {
@@ -127,16 +129,16 @@ func (m *stateMap) Load(key string) (value State, ok bool) {
 	return e.load()
 }
 
-func (e *entryStateMap) load() (value State, ok bool) {
+func (e *entryStateMap) load() (value storage.State, ok bool) {
 	p := atomic.LoadPointer(&e.p)
 	if p == nil || p == expungedStateMap {
 		return value, false
 	}
-	return *(*State)(p), true
+	return *(*storage.State)(p), true
 }
 
 // Store sets the value for a key.
-func (m *stateMap) Store(key string, value State) {
+func (m *stateMap) Store(key string, value storage.State) {
 	read, _ := m.read.Load().(readOnlyStateMap)
 	if e, ok := read.m[key]; ok && e.tryStore(&value) {
 		return
@@ -169,7 +171,7 @@ func (m *stateMap) Store(key string, value State) {
 //
 // If the entry is expunged, tryStore returns false and leaves the entry
 // unchanged.
-func (e *entryStateMap) tryStore(i *State) bool {
+func (e *entryStateMap) tryStore(i *storage.State) bool {
 	for {
 		p := atomic.LoadPointer(&e.p)
 		if p == expungedStateMap {
@@ -192,14 +194,14 @@ func (e *entryStateMap) unexpungeLocked() (wasExpunged bool) {
 // storeLocked unconditionally stores a value to the entry.
 //
 // The entry must be known not to be expunged.
-func (e *entryStateMap) storeLocked(i *State) {
+func (e *entryStateMap) storeLocked(i *storage.State) {
 	atomic.StorePointer(&e.p, unsafe.Pointer(i))
 }
 
 // LoadOrStore returns the existing value for the key if present.
 // Otherwise, it stores and returns the given value.
 // The loaded result is true if the value was loaded, false if stored.
-func (m *stateMap) LoadOrStore(key string, value State) (actual State, loaded bool) {
+func (m *stateMap) LoadOrStore(key string, value storage.State) (actual storage.State, loaded bool) {
 	// Avoid locking if it's a clean hit.
 	read, _ := m.read.Load().(readOnlyStateMap)
 	if e, ok := read.m[key]; ok {
@@ -239,13 +241,13 @@ func (m *stateMap) LoadOrStore(key string, value State) (actual State, loaded bo
 //
 // If the entry is expunged, tryLoadOrStore leaves the entry unchanged and
 // returns with ok==false.
-func (e *entryStateMap) tryLoadOrStore(i State) (actual State, loaded, ok bool) {
+func (e *entryStateMap) tryLoadOrStore(i storage.State) (actual storage.State, loaded, ok bool) {
 	p := atomic.LoadPointer(&e.p)
 	if p == expungedStateMap {
 		return actual, false, false
 	}
 	if p != nil {
-		return *(*State)(p), true, true
+		return *(*storage.State)(p), true, true
 	}
 
 	// Copy the interface after the first load to make this method more amenable
@@ -261,7 +263,7 @@ func (e *entryStateMap) tryLoadOrStore(i State) (actual State, loaded, ok bool) 
 			return actual, false, false
 		}
 		if p != nil {
-			return *(*State)(p), true, true
+			return *(*storage.State)(p), true, true
 		}
 	}
 }
@@ -306,7 +308,7 @@ func (e *entryStateMap) delete() (hadValue bool) {
 //
 // Range may be O(N) with the number of elements in the map even if f returns
 // false after a constant number of calls.
-func (m *stateMap) Range(f func(key string, value State) bool) {
+func (m *stateMap) Range(f func(key string, value storage.State) bool) {
 	// We need to be able to iterate over all of the keys that were already
 	// present at the start of the call to Range.
 	// If read.amended is false, then read.m satisfies that property without

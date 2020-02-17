@@ -1,6 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
-# gazelle:resolve go github.com/cigarframework/reconciled/pkg/proto @reconciled//pkg/proto:go_default_library
+# gazelle:resolve go github.com/cigarframework/reconciled/pkg/proto @com_github_cigarframework_reconciled//pkg/proto:go_default_library
 go_library(
     name = "go_default_library",
     srcs = [

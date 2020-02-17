@@ -1,12 +1,10 @@
-_config/
 bazel-*
 .idea/
-proto
 dist/
-node_modules/
 .vscode
 vendor/
 coverall.dat
 coverall.html
 coverall.json
 bin
+/proto
