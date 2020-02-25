@@ -6,7 +6,6 @@ go_library(
     srcs = [
         "client.go",
         "options.go",
-        "statemap_gen.go",
         "storage.go",
         "utils.go",
     ],

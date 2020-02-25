@@ -2,7 +2,7 @@ package storage
 
 import "github.com/cigarframework/reconciled/pkg/proto"
 
-//go:generate syncmap -name stateMap -pkg storage -o statemap_gen.go map[string]State
+//go:generate go-generate -name StateMap -generator sync/map map[string]State
 
 type State interface {
 	GetMeta() *proto.Meta

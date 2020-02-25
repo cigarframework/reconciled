@@ -36,7 +36,7 @@ func (s *Storage) LoadGroup(group string) (kinds *kindStorage, loaded bool) {
 	return kinds, ok
 }
 
-func (s *Storage) LoadKind(group, kind string) (states *stateMap, loaded bool) {
+func (s *Storage) LoadKind(group, kind string) (states *StateMap, loaded bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	kinds, ok := s.groups[group]
@@ -92,12 +92,12 @@ func (s *Storage) RangeGroup(fn func(group string, kinds *kindStorage) bool) {
 	}
 }
 
-func (s *Storage) RangeKind(fn func(group, kind string, states *stateMap) bool) {
+func (s *Storage) RangeKind(fn func(group, kind string, states *StateMap) bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	for group, kinds := range s.groups {
 		var breakFlag bool
-		kinds.RangeKind(func(kind string, states *stateMap) bool {
+		kinds.RangeKind(func(kind string, states *StateMap) bool {
 			if !fn(group, kind, states) {
 				breakFlag = true
 				return false

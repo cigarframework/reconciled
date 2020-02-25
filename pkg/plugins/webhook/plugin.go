@@ -21,7 +21,7 @@ func init() {
 	storage.RegisterSystemKind(Kind)
 }
 
-//go:generate syncmap -name pluginMap -pkg webhook -o pluginmap_gen.go map[string]*subPlugin
+//go:generate go-generate -name pluginMap -generator sync/map map[string]*subPlugin
 
 type subPlugin struct {
 	name   string

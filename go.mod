@@ -23,6 +23,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.12.2 // indirect
+	github.com/joesonw/go-generate v0.0.0-20200225060655-359e5b83fa5c // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/ory/ladon v1.1.0
 	github.com/prometheus/client_golang v1.4.1 // indirect
@@ -39,7 +40,7 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/net v0.0.0-20191002035440-2ec189313ef0
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191029190741-b9c20aec41a5
+	golang.org/x/tools v0.0.0-20200225022059-a0ec867d517c
 	google.golang.org/grpc v1.26.0
 	gopkg.in/yaml.v2 v2.2.8
 	sigs.k8s.io/yaml v1.2.0 // indirect
